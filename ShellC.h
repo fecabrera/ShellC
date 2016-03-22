@@ -24,5 +24,8 @@
 extern const char *dir_list[];
 
 int parse(char *str, char *argv[], const char* delim);
+int get_dir(const char *home, const char *path, char *str);
+int run_cmd(char *argv[]);
+void cd(char *argv[]);
 
 #endif // __SHELL_C
