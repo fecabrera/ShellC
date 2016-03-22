@@ -3,13 +3,17 @@
 int run_cmd(char *argv[])
 {
 	int status;
+	int p[2];
 	pid_t pid = fork();
+	pipe(p);
 
 	if(pid < 0) {
 		fprintf(stderr, "*** Error: can't fork()\n");
 		return pid;
 	}
 	else if(pid == 0) {
+		dup2(p[0], 0);
+		dup2(p[1], 1);
 		char cmd[MAX_LEN];
 		int i=0;
 		while(i < 3) {
