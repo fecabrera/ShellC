@@ -30,6 +30,19 @@ int parse(char *str, char *argv[], const char* delim)
 
 const char *dir_list[] = { "", "/bin/", "/sbin/" };
 
+int get_dir(const char *home, const char *path, char *str)
+{
+	int n = strlen(home), m = strlen(path), i;
+	for(i = 0; i < n; i++) {
+		if(home[i] != path[i]) {
+			strcpy(str, path);
+			return 1;
+		}
+	}
+	sprintf(str, "~%s", path + i);
+	return 0;
+}
+
 int run_cmd(char *argv[])
 {
 	int status;
@@ -69,7 +82,9 @@ int main()
 	const char *user = pw->pw_name;
 	while(1) {
 		char *cwd = getcwd(NULL, 0);
-		printf("%s@ShellC:%s$ ", user, cwd);
+		char cwd2[MAX_LEN];
+		get_dir(homedir, cwd, cwd2);
+		printf("%s@ShellC:%s$ ", user, cwd2);
 		free(cwd);
 		char str[MAX_LEN];
 		char *pipes[MAX_ARGS];
