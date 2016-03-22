@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <pwd.h>
 
 #define MAX_ARGS 256
 #define MAX_LEN 1024
@@ -34,21 +35,12 @@ int run_cmd(char *argv[])
 	int status;
 	pid_t pid = fork();
 
-	int in_pipe[2], out_pipe[2];
-
-	pipe(in_pipe);
-	pipe(out_pipe);
-
 	if(pid < 0) {
 		fprintf(stderr, "*** Error: can't fork()\n");
 		return pid;
 	}
 	else if(pid == 0) {
 		char cmd[MAX_LEN];
-		close(0);
-		dup(in_pipe[0]);
-		close(in_pipe[0]);
-		close(in_pipe[1]);
 		int i=0;
 		while(i < 3) {
 			sprintf(cmd, "%s%s", dir_list[i], argv[0]);
@@ -59,8 +51,6 @@ int run_cmd(char *argv[])
 	}
 	else {
 		// write
-		close(in_pipe[0]);
-		close(in_pipe[1]);
 		waitpid(-1, &pid, 0);
 	}
 
@@ -74,9 +64,12 @@ void cd(char *argv[])
 
 int main()
 {
+	struct passwd *pw = getpwuid(getuid());
+	const char *homedir = pw->pw_dir;
+	const char *user = pw->pw_name;
 	while(1) {
 		char *cwd = getcwd(NULL, 0);
-		printf("%s >> ", cwd);
+		printf("%s@ShellC:%s$ ", user, cwd);
 		free(cwd);
 		char str[MAX_LEN];
 		char *pipes[MAX_ARGS];
@@ -88,9 +81,7 @@ int main()
 			char *argv[MAX_ARGS];
 			parse(pipes[i], argv, " \t\n");
 			if(argv[0] == NULL) continue;
-			else if(!strcmp(argv[0], "exit")) {
-				exit(0);
-			}
+			else if(!strcmp(argv[0], "exit")) exit(0);
 			else if(!strcmp(argv[0], "cd")) cd(argv);
 			else run_cmd(argv);
 		}
