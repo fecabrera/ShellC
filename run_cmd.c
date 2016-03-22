@@ -1,6 +1,6 @@
 #include "ShellC.h"
 
-int run_cmd(char *argv[])
+int run_cmd(char *argv[], int index, int npipes)
 {
 	int status;
 	int p[2];
@@ -12,8 +12,8 @@ int run_cmd(char *argv[])
 		return pid;
 	}
 	else if(pid == 0) {
-		dup2(p[0], 0);
-		dup2(p[1], 1);
+		if(index!=1) dup2(p[0], 0);
+		if(index!=npipes) dup2(p[1], 1);
 		char cmd[MAX_LEN];
 		int i=0;
 		while(i < 3) {

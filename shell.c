@@ -18,7 +18,7 @@ int main()
 		char *pipes[MAX_ARGS];
 		int i;
 		fgets(str, MAX_LEN, stdin);
-		parse(str, pipes, "|");
+		int npipes = parse(str, pipes, "|");
 		for(i = 0; pipes[i] != NULL; i++) {
 			//printf("%s\n", pipes[i]);
 			char *argv[MAX_ARGS];
@@ -26,7 +26,7 @@ int main()
 			if(argv[0] == NULL) continue;
 			else if(!strcmp(argv[0], "exit")) exit(0);
 			else if(!strcmp(argv[0], "cd")) cd(argv);
-			else run_cmd(argv);
+			else run_cmd(argv, i+1, npipes);
 		}
 	}
 
