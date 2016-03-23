@@ -1,19 +1,26 @@
 #include "ShellC.h"
 
-int run_cmd(char *argv[], int index, int npipes)
+int run_cmd(char *argv[], int index, int npipes, int *in_pipe, int *out_pipe)
 {
 	int status;
-	int p[2];
 	pid_t pid = fork();
-	pipe(p);
 
 	if(pid < 0) {
-		fprintf(stderr, "*** Error: can't fork()\n");
+		ShellError("Can't fork()");
 		return pid;
 	}
 	else if(pid == 0) {
-		if(index!=1) dup2(p[0], 0);
-		if(index!=npipes) dup2(p[1], 1);
+		if(index != 1) {
+			close(in_pipe[1]);
+			if(dup2(in_pipe[0], 0) == -1)  ShellError("Can't dup() STDIN");
+			close(in_pipe[0]);
+		}
+		if(index != npipes) {
+			close(out_pipe[0]);
+			if(dup2(out_pipe[1], 1) == -1) ShellError("Can't dup() STDOUT");
+			close(out_pipe[1]);
+		}
+
 		char cmd[MAX_LEN];
 		int i=0;
 		while(i < 3) {
@@ -21,11 +28,11 @@ int run_cmd(char *argv[], int index, int npipes)
 			execvp(cmd, argv);
 			i++;
 		}
-		fprintf(stderr, "*** Error: Command '%s' uknown\n", argv[0]);
+		CommandNotFound(argv[0]);
 	}
 	else {
-		// write
 		waitpid(-1, &pid, 0);
+		close(out_pipe[1]);
 	}
 
 	return status;

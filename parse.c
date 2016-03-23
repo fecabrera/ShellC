@@ -7,5 +7,5 @@ int parse(char *str, char *argv[], const char* delim)
 	while(argv[i++] != NULL) {
 		argv[i] = strtok(NULL, delim);
 	}
-	return i;
+	return i - 1;
 }
