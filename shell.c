@@ -4,7 +4,7 @@ const char *dir_list[] = { "", "/bin/", "/sbin/" };
 
 int main()
 {
-	//signal (SIGINT, SIG_IGN);
+	signal (SIGINT, SIG_IGN);
 	struct passwd *pw = getpwuid(getuid());
 	const char *homedir = pw->pw_dir;
 	const char *user = pw->pw_name;
@@ -27,7 +27,9 @@ int main()
 			parse(pipes[i], argv, " \t\n");
 			if(argv[0] == NULL) continue;
 			else if(!strcmp(argv[0], "exit")) exit(0);
-			else if(!strcmp(argv[0], "cd")) cd(argv);
+			else if(!strcmp(argv[0], "cd")) {
+				cd(argv);
+			}
 			else run_cmd(argv, i+1, npipes, p[i], p[i+1]);
 		}
 	}
