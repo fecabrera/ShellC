@@ -4,7 +4,7 @@ const char *dir_list[] = { "", "/bin/", "/sbin/" };
 
 int main()
 {
-	printf("\n\n#### ShellC ####\n");
+	printf("\n#### ShellC ####\n");
 	signal (SIGINT, SIG_IGN);
 	struct passwd *pw = getpwuid(getuid());
 	const char *homedir = pw->pw_dir;
