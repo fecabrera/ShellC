@@ -32,5 +32,6 @@ int run_cmd(char *argv[], int index, int npipes, int *in_pipe, int *out_pipe);
 void cd(char *argv[]);
 void save_log(char *str);
 void save_time(double seconds);
+int save_output(int npipes, int *pipe, int fd);
 
 #endif // __SHELL_C
